@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kicks - Boutique</title>
+  <meta name="description" content="Découvrez les meilleures sneakers et streetwear. Livraison en Guadeloupe, Martinique, Guyane et France.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AXd7iZon2xRzhIauBjGdjwxQk237evP3BTtNfqIKpEaYDTOk9S733o-_GcPQIqhZ7bCalMG-M_PNaRHG&currency=EUR&disable-features=host-detection" async defer></script>
+  
+  <link rel="stylesheet" href="css/style.css?v=1.1">
+  <script src="js/main.js?v=1.1" defer></script>
+</head>
+
+<body data-api-url="https://script.google.com/macros/s/AKfycbyPKAwMJbJ0SJ9FZX_TnhRGt_sFHvF17CWpJ8nv8kSlII01J8hLeiYjDhTeJ5uQeRJBIw/exec">
+
+  <div id="popup" class="modal-backdrop hidden">
+    <div class="modal-box text-center">
+      <h3 class="text-2xl font-bold mb-4">Merci <span id="popup-prenom"></span> !</h3>
+      <p class="mb-4">Votre commande a été enregistrée avec succès.</p>
+      <div id="popup-payment-info" class="p-4 bg-gray-100 rounded-lg mb-4 hidden"></div>
+      <p class="text-sm text-gray-500">Vous allez être redirigé vers l'accueil dans <span id="popup-count">10</span>s.</p>
+    </div>
+  </div>
+  
+  <div id="alert-modal" class="modal-backdrop hidden">
+    <div class="modal-box text-center max-w-sm">
+      <h3 class="text-xl font-bold mb-4 text-red-600">Attention</h3>
+      <p class="mb-6" id="alert-message">Message d'erreur ici.</p>
+      <div class="flex justify-center">
+        <button id="alert-modal-close" class="btn-primary">Compris</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="confirm-modal" class="modal-backdrop hidden">
+    <div class="modal-box text-center max-w-sm">
+      <h3 class="text-xl font-bold mb-4">Confirmation requise</h3>
+      <p class="mb-6" id="confirm-message">Êtes-vous sûr ?</p>
+      <div class="flex justify-center gap-4">
+        <button id="confirm-no" class="btn-secondary" style="background-color: #6b7280; color: white;">Annuler</button>
+        <button id="confirm-yes" class="btn-primary">Oui, continuer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="iframe-modal" class="modal-backdrop text-modal hidden">
+    <div class="modal-box-text modal-box-iframe">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="iframe-title" class="text-2xl font-bold">Titre</h3>
+        <span class="modal-close-btn">&times;</span>
+      </div>
+      <div class="modal-content-iframe">
+        <iframe id="iframe-content" src="about:blank" frameborder="0"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <div id="product-preview-modal" class="modal-backdrop hidden">
+    <div class="modal-box-product-preview">
+      <span class="modal-close-btn product-preview-close">&times;</span>
+      <div class="preview-content">
+        <div class="preview-images">
+          <div class="preview-main-img-container">
+            <img id="preview-main-image" src="https://placehold.co/600x600/f0f0f0/ccc?text=Image" alt="Aperçu produit">
+          </div>
+          <div id="preview-thumbs" class="preview-thumbs-container"></div>
+        </div>
+        <div class="preview-info">
+          <h2 id="preview-title" class="text-2xl font-bold mb-2">Titre du produit</h2>
+          <p id="preview-description" class="text-gray-600 mb-4">Description du produit ici...</p>
+          <p class="text-sm text-gray-500">Pour sélectionner la taille et ajouter au panier, veuillez consulter la fiche produit complète.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="modal-cgv" class="modal-backdrop text-modal hidden">
+    <div class="modal-box-text">
+      <span class="modal-close-btn">&times;</span><h3>Conditions Générales de Vente</h3>
+      <div class="modal-content"><p>Texte des CGV ici...</p></div>
+    </div>
+  </div>
+  <div id="modal-mentions" class="modal-backdrop text-modal hidden">
+    <div class="modal-box-text">
+      <span class="modal-close-btn">&times;</span><h3>Mentions Légales</h3>
+      <div class="modal-content"><p>Texte des Mentions Légales ici...</p></div>
+    </div>
+  </div>
+  <div id="modal-politique" class="modal-backdrop text-modal hidden">
+    <div class="modal-box-text">
+      <span class="modal-close-btn">&times;</span><h3>Politique de Confidentialité</h3>
+      <div class="modal-content"><p>Texte de la politique de confidentialité ici...</p></div>
+    </div>
+  </div>
+  <div id="modal-payment" class="modal-backdrop text-modal hidden">
+    <div class="modal-box-text">
+      <span class="modal-close-btn">&times;</span><h3>Paiement Sécurisé</h3>
+      <div class="modal-content"><p>Infos sur le paiement sécurisé (SumUp, virement, PayPal)...</p></div>
+    </div>
+  </div>
+  <div id="modal-shipping" class="modal-backdrop text-modal hidden">
+    <div class="modal-box-text">
+      <span class="modal-close-btn">&times;</span><h3>Livraison 48h</h3>
+      <div class="modal-content"><p>Infos sur la livraison 48h (Guadeloupe Express, etc)...</p></div>
+    </div>
+  </div>
+  <div id="modal-contact" class="modal-backdrop text-modal hidden">
+    <div class="modal-box-text">
+      <span class="modal-close-btn">&times;</span><h3>Contactez-nous</h3>
+      <div class="modal-content">
+        <form id="contact-form" class="space-y-4">
+          <div><label for="contact-prenom" class_ignored="block text-sm font-medium text-gray-700">Prénom</label><input type="text" id="contact-prenom" name="contact-prenom" required class_ignored="form-input"></div>
+          <div><label for="contact-email" class_ignored="block text-sm font-medium text-gray-700">Email</label><input type="email" id="contact-email" name="contact-email" required class_ignored="form-input"></div>
+          <div><label for="contact-message" class_ignored="block text-sm font-medium text-gray-700">Message</label><textarea id="contact-message" name="contact-message" rows="4" required class_ignored="form-input"></textarea></div>
+          <button type="submit" id="btn-contact-submit" class_ignored="btn-primary w-full">Envoyer</button>
+          <p id="contact-status" class_ignored="text-sm text-center"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-cookies" class="modal-backdrop text-modal hidden">
+    <div class="modal-box-text">
+      <span class="modal-close-btn">&times;</span><h3>Politique de cookies</h3>
+      <div class="modal-content"><p>Texte de la politique de cookies à remplir ici...</p></div>
+    </div>
+  </div>
+  
+  <div id="toast-notification" class="toast-notification">
+    Message du toast
+  </div>
+
+  <div id="cart-overlay" class="cart-overlay" role="dialog" aria-modal="true" aria-labelledby="cart-title" aria-hidden="true">
+    <div class="cart-content">
+      
+      <div class="flex justify-between items-center pb-4 border-b flex-shrink-0">
+        <h2 id="cart-title" class="text-2xl font-bold">Votre Panier</h2>
+        <button id="close-cart" class="text-2xl" aria-label="Fermer le panier">&times;</button>
+      </div>
+
+      <div id="cart-shipping-incentive-bar" class="cart-incentive-bar" style="display: none;"></div>
+
+      <div class="cart-scroll-area">
+        
+        <div id="cart-items" class="space-y-4 my-6">
+          <div class="muted">Panier vide</div>
+        </div>
+
+        <div class="border-t pt-6 space-y-4">
+          <div class="flex justify-between">
+            <div>Sous-total</div>
+            <div id="cart-subtotal">0,00 €</div>
+          </div>
+          <div class="flex justify-between">
+            <div class="font-bold">Livraison</div>
+            <div id="cart-shipping" class="font-bold">0,00 €</div>
+          </div>
+          <div id="cart-shipping-name" class="text-right text-sm muted hidden" style="margin-top: -8px; margin-bottom: 8px;"></div>
+          <p id="shipping-promo" class="text-sm text-green-600"></p>
+          <hr class="my-2">
+          <div class="flex justify-between text-lg font-bold">
+            <div>Total</div>
+            <div id="cart-total">0,00 €</div>
+          </div>
+          <div class="text-right text-sm muted">
+            <span id="cart-four-times-display" class="hidden"></span>
+          </div>
+        </div>
+
+        <form id="quick-form" class="space-y-4 mt-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input type="text" name="prenom" placeholder="Prénom*" required class="form-input">
+            <input type="text" name="nom" placeholder="Nom*" required class="form-input">
+          </div>
+          <input type="email" name="email" placeholder="Email*" required class="form-input">
+          <input type="tel" name="telephone" placeholder="Téléphone*" required class="form-input">
+          
+          <hr>
+          <h4 class="font-bold">Livraison</h4>
+          <div>
+            <label for="zoneLivraison" class="label-form">Méthode de Livraison*</label>
+            <select id="zoneLivraison" name="zoneLivraison" required class="form-input">
+              <option value="">-- Choisir une méthode --</option>
+              <option value="Guadeloupe_Standard">Guadeloupe (Standard)</option>
+              <option value="Guadeloupe_Express">Guadeloupe Express 24h (Communes éligibles)</option>
+              <option value="France_Colissimo">France (Colissimo)</option>
+              <option value="Corse_Colissimo">Corse (Colissimo)</option>
+            </select>
+          </div>
+          <div id="dom-postal-container" class="hidden">
+            <label for="dom-postal" class="label-form">Code Postal & Commune (DOM)*</label>
+            <select id="dom-postal" name="dom-postal" class="form-input">
+              <option value="">-- Choisir CP et Commune --</option>
+            </select>
+          </div>
+          <div id="city-container" class="space-y-4 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input type="text" name="codepostal" placeholder="Code Postal (France)*" class="form-input">
+              <input type="text" name="commune" placeholder="Commune (France)*" class="form-input">
+            </div>
+          </div>
+          <input type="text" name="adresse" placeholder="Adresse (N°, Rue...)*" required class="form-input">
+          
+          <hr>
+          <h4 class="font-bold">Paiement</h4>
+          <div class="flex justify-center my-4">
+            <div class="g-recaptcha" data-sitekey="6LdxFA4sAAAAAGi_sahJ3mfLrh4jsFWNXW8cfY2v"></div>
+          </div>
+          
+          <div class="space-y-3">
+            <div id="paypal-button-overlay"></div>
+            
+            <div class="flex justify-center my-2">
+              <img src="sumup.png" alt="Moyens de paiement" class="payment-methods-img">
+            </div>
+
+            <button type="button" id="btn-submit-sumup" class="btn-secondary w-full">Payer par Carte Bancaire (via lien SumUp)</button>
+            <button type="button" id="btn-submit-virement" class="btn-secondary w-full">Payer par Virement Bancaire</button>
+            <button type="button" id="toggle-iban-button" class="text-sm text-center block underline w-full">Afficher l'IBAN</button>
+            <div id="virement-info" class="hidden p-3 bg-gray-100 rounded text-sm">
+              <strong>Titulaire:</strong> R.Laskari / Kicks<br>
+              <strong>IBAN:</strong> IE85SUMU99036512267268<br>
+              <strong>Banque:</strong> SumUp Limited<br>
+              <strong>Communication:</strong> (Sera fournie après commande)
+            </div>
+          </div>
+        </form>
+        <button id="btn-clear-cart" class="text-sm text-red-500 underline mt-4">Vider le panier</button>
+      </div> </div> </div> <div id="filter-overlay" class="filter-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="filter-content">
+      <div class="flex justify-between items-center pb-4 border-b">
+        <h2 class="text-2xl font-bold">Filtrer les produits</h2>
+        <button id="close-filter" class="text-2xl" aria-label="Fermer les filtres">&times;</button>
+      </div>
+      
+      <div class="filter-scroll-area">
+        <h3 class="text-lg font-bold mb-3 mt-4">Catégories</h3>
+        <div id="filter-category-mobile" class="filter-button-list">
+          </div>
+        
+        <h3 class="text-lg font-bold mb-3 mt-6">Tailles</h3>
+        <div id="filter-size-mobile" class="filter-button-list">
+          </div>
+      </div>
+      
+      <div class="filter-footer">
+        <button id="clear-filters-mobile" class="btn-secondary w-full">Réinitialiser les filtres</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <header id="site-header" class="w-full bg-white sticky top-0 z-40 transition-shadow duration-300">
+    <div id="banner" class="topbar-banner">
+      <div id="banner-content" class="max-container">
+        <span id="banner-text"></span>
+      </div>
+    </div>
+    
+    <nav class="max-container flex justify-between items-center py-4">
+      
+      <a href="/" class="hidden md:flex flex-col items-start">
+        <img src="https://i.ibb.co/GvN8CbtQ/logo.png" alt="Kicks Logo" class="header-logo">
+        <div class="text-sm font-bold cursor-pointer" style="color: var(--orange);">
+          <span id="logo-subtext"></span>
+        </div>
+      </a>
+
+      <button id="mobile-filter-btn" class="p-2 md:hidden" aria-label="Filtrer les produits">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
+      </button>
+      
+      <a href="/" class="flex flex-col items-center md:hidden">
+        <img src="https://i.ibb.co/GvN8CbtQ/logo.png" alt="Kicks Logo" class="header-logo" style="height: 3.5rem;">
+        <div class="text-sm font-bold cursor-pointer" style="color: var(--orange);">
+          <span id="logo-subtext-mobile"></span>
+        </div>
+      </a>
+      
+      <div id="cart-float-btn" class="cart-float-btn" role="button" aria-label="Ouvrir le panier">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-7 h-7">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <span id="cart-count" class="cart-count-badge">0</span>
+      </div>
+    </nav>
+  </header>
+
+  <main class="max-container my-8">
+    
+    <section class="mb-8 p-4 bg-white rounded-lg shadow-sm hidden md:grid grid-cols-1 md:grid-cols-3 gap-4">
+      <input type="search" id="search" placeholder="Rechercher (nom, modèle...)" class="form-input">
+      <select id="filter-category" class="form-input">
+        <option value="">Toutes catégories</option>
+        </select>
+      <select id="filter-size" class="form-input">
+        <option value="">Toutes tailles</option>
+        </select>
+    </section>
+
+    <section id="catalogue" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text-sm"></div></div>
+      <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text-sm"></div></div>
+      <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text-sm"></div></div>
+    </section>
+
+    <nav id="pagination" class="flex justify-center space-x-2 mt-12"></nav>
+
+    <section id="youtube-embed-container" class="my-12 hidden max-w-4xl mx-auto"> <iframe id="youtube-iframe" width="560" height="315" src="" title="Lecteur vidéo YouTube" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </section>
+
+  </main>
+  
+  <footer class="bg-gray-800 text-gray-300">
+    <div class="max-container py-12">
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="font-bold text-lg mb-4 text-white">Informations</h4>
+          <ul class="space-y-2 text-sm">
+            <li><button type="button" class="footer-link" data-modal-target="modal-cgv">Conditions Générales de Vente</button></li>
+            <li><button type="button" class="footer-link" data-modal-target="modal-mentions">Mentions Légales</button></li>
+            <li><button type="button" class="footer-link" data-modal-target="modal-politique">Politique de Confidentialité</button></li>
+            <li><button type="button" class="footer-link" data-modal-target="modal-contact">Contactez-nous</button></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="font-bold text-lg mb-4 text-white">Services</h4>
+          <ul class="space-y-2 text-sm">
+            <li><button type="button" class="footer-link" data-modal-iframe="https://avc.kixx.fr" data-modal-title="Avis Clients">Avis Clients</button></li>
+            <li><button type="button" class="footer-link" data-modal-target="modal-cookies">Politique de cookies</button></li>
+            <li><button type="button" class="footer-link" data-modal-target="modal-payment">Paiement Sécurisé</button></li>
+            <li><button type="button" class="footer-link" data-modal-target="modal-shipping">Livraison 48h</button></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="font-bold text-lg mb-4 text-white">Newsletter</h4>
+          <p class="text-sm mb-4">Ne manquez aucune sortie, inscrivez-vous !</p>
+          <form id="newsletter-form" class="space-y-3">
+            <input type="text" id="newsletter-prenom" placeholder="Votre Prénom" class="form-input-dark">
+            <input type="email" id="newsletter-email" placeholder="Votre Email" required class="form-input-dark">
+            <button type="submit" id="btn-newsletter" class="btn-primary w-full">S'inscrire</button>
+            <p id="newsletter-status" class="text-sm text-center"></p>
+          </form>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-700 pt-8 text-center text-sm">
+        <p>&copy; 2024 Kicks. Tous droits réservés.</p>
+        <p class="mt-2">Total Payé (Affichage test): <span id="total-display">0,00 €</span> <span id="four-times-display">—</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/590690366198" class="whatsapp-float-btn" 
+     target="_blank" 
+     rel="noopener noreferrer"
+     aria-label="Contacter sur WhatsApp">
+    <svg viewBox="0 0 32 32" fill="currentColor" width="32px" height="32px">
+        <path d="M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.143-.73-2.09-.832-2.335-.143-.372-.214-.487-.6-.487-.187 0-.36-.044-.53-.044-.31 0-.525.044-.68.223-.143.184-.495.467-.495 1.066 0 .6.314 1.164.314 1.28 0 .043-.158 1.017-.158 1.017-.918 2.09-2.22 3.49-3.9 4.22a.66.66 0 0 1-.133.043c-.33.11-.65.184-.96.184-1.1 0-1.867-.88-2.09-1.63-.288-.88-.74-1.63-.74-1.63s-1.313-2.268-1.313-4.228c0-2.09.83-3.79 1.353-4.474.524-.684 1.206-.95 1.673-.95.33 0 .65.043.91.043.26 0 .425.043.58.043.158 0 .315.043.48.11s.41.087.63.308c.22.22.41.52.41.807 0 .287-.072.43-.158.608-.086.183-.215.372-.215.372s-.287.608-.53.88c-.287.33-.425.568-.425.807 0 .238.143.466.315.65.172.183.33.372.33.372s.41.69.876 1.147c.466.456 1.13.913 1.353 1.066.22.158.41.215.58.215.21 0 .6-.086.83-.372.23-.287.68-.806.68-.806s.21-.214.37-.258c.158-.043.33-.043.465-.043.14 0 .287.043.41.086.125.043.215.214.36.466.14.253.21.41.21.568 0 .158-.043.287-.086.41-.043.125-.086.215-.086.215s-.086.1-.17.214c-.08.11-.21.258-.21.258s-.15.17-.288.287c-.126.11-.214.184-.287.258-.072.072-.125.125-.125.125s-.215.17-.41.308c-.185.125-.41.258-.41.258s-.158.087-.315.184c-.158.086-.33.157-.33.157s-.17.086-.26.11c-.1.028-.2.043-.315.043-.1 0-.17-.014-.25-.043zM15.996 4C9.36 4 4 9.36 4 15.997c0 2.21.606 4.31 1.71 6.13l-1.85 5.67 5.8-1.728c1.76.98 3.74 1.55 5.84 1.55 6.637 0 11.998-5.36 11.998-11.998S22.634 4 15.996 4zm0 21.55c-1.928 0-3.78-.49-5.407-1.36l-.387-.23-.406.095-4.008 1.187 1.206-3.89-.258-.41c-.93-1.65-1.44-3.57-1.44-5.61C9.3 10.82 12.31 7.81 15.996 7.81s6.69 3.01 6.69 6.69c0 3.68-3.008 6.69-6.69 6.69z"></path>
+    </svg>
+  </a>
+
+</body>
+</html>
